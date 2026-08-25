@@ -85,15 +85,15 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   const getFormatBadge = () => {
     switch (item.type) {
       case 'mcq':
-        return { label: 'MCQ Quiz', color: 'bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-800' };
+        return { label: 'MCQ Quiz', color: 'bg-blue-50 dark:bg-blue-900/60 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-700/80' };
       case 'true_false':
-        return { label: 'True / False', color: 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800' };
+        return { label: 'True / False', color: 'bg-emerald-50 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-200 border-emerald-200 dark:border-emerald-700/80' };
       case 'this_or_that_poll':
-        return { label: 'Fan Poll', color: 'bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-200 border-purple-200 dark:border-purple-800' };
+        return { label: 'Fan Poll', color: 'bg-purple-50 dark:bg-purple-900/60 text-purple-700 dark:text-purple-200 border-purple-200 dark:border-purple-700/80' };
       case 'fill_in_blank':
-        return { label: 'Fill Blank', color: 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-200 border-amber-200 dark:border-amber-800' };
+        return { label: 'Fill Blank', color: 'bg-amber-50 dark:bg-amber-900/60 text-amber-700 dark:text-amber-200 border-amber-200 dark:border-amber-700/80' };
       case 'guess_the_number':
-        return { label: 'Stat Guess', color: 'bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-200 border-rose-200 dark:border-rose-800' };
+        return { label: 'Stat Guess', color: 'bg-rose-50 dark:bg-rose-900/60 text-rose-700 dark:text-rose-200 border-rose-200 dark:border-rose-700/80' };
     }
   };
 
@@ -103,17 +103,18 @@ export const ContentCard: React.FC<ContentCardProps> = ({
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 22 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 15 }}
+      exit={{ opacity: 0, y: 10 }}
       transition={{ 
-        duration: 0.42, 
-        delay: Math.min(0.45, index * 0.075),
+        duration: 0.32, 
+        delay: Math.min(0.3, index * 0.05),
         ease: [0.22, 1, 0.36, 1] 
       }}
-      className={`relative bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md ${
+      whileHover={{ y: -3, transition: { duration: 0.18 } }}
+      className={`relative bg-white dark:bg-slate-900/95 rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md ${
         isSelectedInSimulator 
-          ? 'border-orange-500 ring-2 ring-orange-500/30 dark:ring-orange-500/40' 
+          ? 'border-orange-500 ring-2 ring-orange-500/40 dark:ring-orange-500/50 shadow-orange-500/10' 
           : 'border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
       }`}
     >
@@ -126,20 +127,20 @@ export const ContentCard: React.FC<ContentCardProps> = ({
       />
 
       {/* Top Header */}
-      <div className="p-3 sm:p-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/70 dark:bg-slate-850/80">
+      <div className="p-3 sm:p-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/70 dark:bg-slate-800/80">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-300">
             #{index + 1}
           </span>
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${badge.color}`}>
             {badge.label}
           </span>
-          <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-300">
             {item.difficulty}
           </span>
           <ViralityTooltip score={virality} focusMetric="overall" position="bottom">
             <span 
-              className="cursor-help inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-orange-100/80 hover:bg-orange-200/80 dark:bg-orange-950/60 dark:hover:bg-orange-900/60 text-orange-700 dark:text-orange-300 border border-orange-200/70 dark:border-orange-800/70 transition-colors"
+              className="cursor-help inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-orange-100/80 hover:bg-orange-200/80 dark:bg-orange-950/80 dark:hover:bg-orange-900/80 text-orange-700 dark:text-orange-300 border border-orange-200/70 dark:border-orange-800/80 transition-colors"
             >
               <TrendingUp className="w-2.5 h-2.5 text-orange-500" />
               <span>{virality.overallScore}</span>
@@ -157,10 +158,10 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
               showProTip
                 ? 'bg-amber-500 text-slate-950 shadow-xs'
-                : 'bg-amber-100/90 hover:bg-amber-200 dark:bg-amber-950/70 dark:hover:bg-amber-900/80 text-amber-800 dark:text-amber-300 border border-amber-300/80 dark:border-amber-800/80'
+                : 'bg-amber-100/90 hover:bg-amber-200 dark:bg-amber-950/80 dark:hover:bg-amber-900/90 text-amber-800 dark:text-amber-200 border border-amber-300/80 dark:border-amber-800/80'
             }`}
           >
-            <Lightbulb className="w-3 h-3 fill-current text-amber-600 dark:text-amber-400" />
+            <Lightbulb className="w-3 h-3 fill-current text-amber-600 dark:text-amber-300" />
             <span>Pro Tip</span>
           </button>
 
@@ -171,7 +172,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             className={`p-1.5 rounded-lg text-xs font-semibold transition-all ${
               isSelectedInSimulator 
                 ? 'bg-orange-500 text-white shadow-xs' 
-                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-800'
+                : 'text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-800'
             }`}
           >
             <Smartphone className="w-3.5 h-3.5" />
@@ -182,7 +183,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             disabled={isRegenerating}
             onClick={handleSingleRegenerate}
             title="Regenerate this item"
-            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-800 transition-colors disabled:opacity-40"
+            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-800 transition-colors disabled:opacity-40"
           >
             <RotateCw className={`w-3.5 h-3.5 ${isRegenerating ? 'animate-spin text-orange-500' : ''}`} />
           </button>
@@ -193,7 +194,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
       <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-3.5">
         {/* Instagram Hook */}
         {item.instagramHook && (
-          <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium italic border-l-2 border-orange-500 pl-2.5 leading-relaxed bg-orange-50/40 dark:bg-orange-950/20 py-1 rounded-r-md">
+          <p className="text-[11px] text-slate-700 dark:text-slate-200 font-medium italic border-l-2 border-orange-500 pl-2.5 leading-relaxed bg-orange-50/40 dark:bg-orange-950/40 py-1 rounded-r-md">
             "{item.instagramHook}"
           </p>
         )}

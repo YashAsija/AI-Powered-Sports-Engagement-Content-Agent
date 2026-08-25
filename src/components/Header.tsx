@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="border-b border-slate-200/70 dark:border-slate-800/80 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl sticky top-0 z-40 transition-colors shadow-2xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1536px] mx-auto px-2.5 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo & Clean Title with Animated Icon */}
           <div className="flex items-center gap-3 group cursor-pointer">

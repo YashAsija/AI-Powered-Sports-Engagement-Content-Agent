@@ -112,9 +112,10 @@ export const GenerationControls: React.FC<GenerationControlsProps> = ({
   const currentSportSuggestions = SPORT_SUGGESTED_TOPICS[activeSport] || [];
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-3.5 sm:p-4 mb-3.5 shadow-xs transition-colors">
+    <div className="glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3 sm:p-3.5 mb-2.5 shadow-xs transition-all relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
       {/* 1. Sport Selector Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-3.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1 shrink-0 uppercase tracking-wider text-[11px]">
           Sport:
         </span>

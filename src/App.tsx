@@ -340,16 +340,15 @@ export default function App() {
         onToggleTheme={toggleTheme}
       />
 
-      {/* Main Studio Container */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex-1 w-full space-y-3">
-        {/* Live Trend Watch Notification Banner */}
-        <LiveTrendBanner
-          onJumpStart={handleJumpStartTrend}
-          isLoading={isLoading}
-        />
+      {/* Main Page Layout Container */}
+      <main className="w-full max-w-[1536px] mx-auto px-2.5 sm:px-4 py-3 sm:py-3.5">
+        {/* Live Sports Trend Ticker Banner */}
+        <div className="mb-2">
+          <LiveTrendBanner activeSport={activeSport} onSelectTopic={setTopicFocus} />
+        </div>
 
         {/* Quick Starter Topics */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-3 text-xs scrollbar-none">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 whitespace-nowrap">
             Popular Topics:
           </span>
@@ -383,7 +382,7 @@ export default function App() {
 
         {/* Batch Status Bar */}
         {batchMetadata && (
-          <div className="px-4 py-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 flex items-center justify-between flex-wrap gap-3 text-xs transition-colors shadow-2xs">
+          <div className="mt-3.5 mb-3.5 px-4 py-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 flex items-center justify-between flex-wrap gap-3 text-xs transition-colors shadow-2xs">
             <div className="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 flex-wrap">
               <span className="font-bold text-slate-900 dark:text-white text-sm">
                 {batchMetadata.sport}
@@ -493,17 +492,17 @@ export default function App() {
         )}
 
         {/* Main Grid: Generated Content Cards (Left) + Live Story Preview Simulator (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start">
           {/* Left Column: Clean Responsive Content Cards Grid */}
           <div className="lg:col-span-7 xl:col-span-7 space-y-4">
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5 sm:gap-5">
                 {[0, 1, 2, 3].map((idx) => (
                   <ContentCardSkeleton key={idx} index={idx} />
                 ))}
               </div>
             ) : items.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5 sm:gap-5">
                 <AnimatePresence mode="popLayout">
                   {items.map((item, idx) => (
                     <ContentCard
@@ -561,7 +560,7 @@ export default function App() {
         </div>
 
         {/* Bottom Section: Predicted Virality Dashboard (Positioned Below Generated Content) */}
-        <div className="w-full pt-0">
+        <div className="w-full pt-6">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-xl bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400">
