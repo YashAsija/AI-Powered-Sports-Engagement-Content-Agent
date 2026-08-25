@@ -216,10 +216,18 @@ app.post('/api/generate-batch', async (req, res) => {
     const cleanTopic = topicFocus?.trim() || '';
 
     // System instruction for StapuBox sports editorial persona
-    const systemInstruction = `You are the lead Sports Engagement Content Agent for StapuBox (a sports social media agency).
+    // When topicFocus is set, it is the very first line to ensure the AI cannot ignore it
+    const systemInstruction = hasTopic
+      ? `CRITICAL INSTRUCTION — ALL OUTPUT MUST BE EXCLUSIVELY ABOUT: "${cleanTopic}" in ${sport}. This is a hard constraint. Do NOT generate any content item that is not directly about "${cleanTopic}". Every single question, statement, poll, and challenge must test knowledge specifically about "${cleanTopic}".
+
+You are the lead Sports Engagement Content Agent for StapuBox (a sports social media agency).
+Your goal is to produce factually accurate, 100% unique, highly engaging, Instagram-ready content (Quizzes, Polls, Fill-in-Blanks, Stats Challenges) ALL centered on "${cleanTopic}".
+When Google Search is enabled, SEARCH SPECIFICALLY FOR "${cleanTopic} ${sport} facts records stats" to uncover verified data.
+Maintain a high-energy, exciting sports tone. Never output fake statistics.
+Always return strictly valid JSON matching the requested schema.`
+      : `You are the lead Sports Engagement Content Agent for StapuBox (a sports social media agency).
 Your goal is to produce factually accurate, 100% unique, highly engaging, Instagram-ready content (Quizzes, Polls, Fill-in-Blanks, Stats Challenges).
-${hasTopic ? `🚨 MANDATORY REQUIREMENT: The user has specified Topic Focus: "${cleanTopic}". EVERY single content item you produce MUST strictly be centered on "${cleanTopic}" within ${sport}. Do NOT deviate to unrelated general sports facts.` : ''}
-When Google Search is enabled, use live search to uncover verified records, recent tournament drama, lesser-known stats, iconic rivalries, and surprising sports trivia specifically matching the requested topic.
+When Google Search is enabled, use live search to uncover verified records, recent tournament drama, lesser-known stats, iconic rivalries, and surprising sports trivia.
 Maintain a high-energy, exciting sports tone. Never output fake statistics or hallucinations.
 Always return strictly valid JSON matching the requested schema.`;
 
@@ -235,47 +243,59 @@ Always return strictly valid JSON matching the requested schema.`;
     const randomAngle = uniquenessAngles[Math.floor(Math.random() * uniquenessAngles.length)];
     const seed = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
-    // Construct prompt with strict topic focus enforcement & search uniqueness
-    const prompt = `
-Generate a 100% FRESH, UNIQUE batch of ${batchSize} sports engagement content items for ${sport}.
-Generation Seed: ${seed}.
-Difficulty: ${difficulty}.
-${hasTopic 
-  ? `🚨 MANDATORY TOPIC FILTER / FOCUS: "${cleanTopic}".
-EVERY single content item (all ${batchSize} items) MUST be directly and specifically about "${cleanTopic}" (e.g. testing records, players, matches, milestones, or facts specifically within this topic).
-Focus Angle for Search: ${randomAngle}.
-Do NOT generate generic questions about ${sport} that don't directly reference or test "${cleanTopic}".` 
-  : `Topic Focus: Live ${sport} facts, iconic milestones, world records, and tournament history (Focus Angle: ${randomAngle}).`}
+    // Construct prompt — topic focus is the VERY FIRST LINE when set
+    const prompt = hasTopic
+      ? `TOPIC FOCUS = "${cleanTopic}" — ALL ${batchSize} content items MUST be about "${cleanTopic}" in ${sport}. This is non-negotiable.
+
+Generate a 100% FRESH, UNIQUE batch of ${batchSize} sports engagement content items.
+Generation Seed: ${seed}. Difficulty: ${difficulty}.
+Sport: ${sport}. Mandatory Topic: "${cleanTopic}".
+
+SEARCH QUERY TO USE: "${cleanTopic} ${sport} records statistics facts milestones" (Focus Angle: ${randomAngle}).
+
+Each of the ${batchSize} items MUST:
+- Be directly and specifically about "${cleanTopic}" (test records, players, matches, milestones, or facts WITHIN this topic).
+- NOT be a generic ${sport} question unrelated to "${cleanTopic}".
+- Reference "${cleanTopic}" explicitly in the question/statement text.
+
+Target Formats: ${formatTypes.join(', ')}.
+
+${vectorContext ? `VECTOR STORE CONTEXT:\n${vectorContext}\n` : ''}
+${previousQuestions.length > 0 ? `AVOID DUPLICATING THESE PREVIOUSLY GENERATED QUESTIONS:\n${previousQuestions.slice(-20).map(q => `- ${q}`).join('\n')}\n` : ''}
+
+RULES:
+1. Every item MUST reference "${cleanTopic}" explicitly.
+2. For MCQ: Exactly 4 distinct options, 1 correct answer matching one option verbatim.
+3. For True/False: Engaging statement about "${cleanTopic}", boolean correctAnswer, clear factual breakdown.
+4. For This-or-That Poll: Exactly 2 debate options about "${cleanTopic}", isOpinionBased: true.
+5. For Fill in the Blank: Sentence with "_____" about "${cleanTopic}", 4 options, 1 correct.
+6. For Guess the Number: Exact numeric targetNumber about "${cleanTopic}", toleranceRange, unitLabel.
+
+Return ONLY a raw JSON array of exactly ${batchSize} items:
+[
+  { "type": "mcq", "sport": "${sport}", "difficulty": "${difficulty === 'Mixed' ? 'Medium' : difficulty}", "question": "...", "options": ["...","...","...","..."], "correctAnswer": "...", "explanation": "...", "instagramHook": "...", "suggestedHashtags": ["#${sport.toLowerCase().replace(/[^a-z0-9]/g, '')}","#SportsTrivia"] },
+  ...
+]`
+      : `Generate a 100% FRESH, UNIQUE batch of ${batchSize} sports engagement content items for ${sport}.
+Generation Seed: ${seed}. Difficulty: ${difficulty}.
+Topic Focus: Live ${sport} facts, iconic milestones, world records, and tournament history (Focus Angle: ${randomAngle}).
 Target Formats: ${formatTypes.join(', ')}.
 
 ${vectorContext ? `CHROMA VECTOR STORE GROUNDING:\n${vectorContext}\n` : ''}
-
-${previousQuestions.length > 0 ? `PREVIOUS QUESTIONS ALREADY GENERATED IN THIS SESSION (STRICT DEDUPLICATION MANDATE - DO NOT DUPLICATE OR RE-USE ANY OF THESE TOPICS):\n${previousQuestions.slice(-20).map(q => `- ${q}`).join('\n')}\n` : ''}
+${previousQuestions.length > 0 ? `PREVIOUS QUESTIONS (DO NOT DUPLICATE):\n${previousQuestions.slice(-20).map(q => `- ${q}`).join('\n')}\n` : ''}
 
 IMPORTANT RULES:
-1. Every generated question, statement, poll prompt, and metric challenge MUST strictly adhere to the requested format and topic focus ("${cleanTopic || sport}").
-2. For MCQ: Exactly 4 distinct options, 1 correct answer matching one of the options verbatim, punchy explanation with verified facts.
-3. For True/False: Engaging statement about the topic, boolean correctAnswer, clear factual breakdown.
-4. For This-or-That Poll: Exactly 2 distinct debate options related to the topic, isOpinionBased: true, NO correct answer, fiery engaging prompt.
-5. For Fill in the Blank: Sentence with "_____" about the topic, 4 options, 1 correct answer matching one option verbatim.
-6. For Guess the Number: Exact numeric targetNumber related to the topic, reasonable toleranceRange (e.g. 3, 5, or 10), unitLabel, explanation.
+1. For MCQ: Exactly 4 distinct options, 1 correct answer matching one option verbatim, punchy explanation.
+2. For True/False: Engaging statement, boolean correctAnswer, clear factual breakdown.
+3. For This-or-That Poll: Exactly 2 debate options, isOpinionBased: true, NO correct answer.
+4. For Fill in the Blank: Sentence with "_____", 4 options, 1 correct.
+5. For Guess the Number: Exact numeric targetNumber, toleranceRange, unitLabel, explanation.
 
-Return ONLY a raw JSON array containing exactly ${batchSize} item objects conforming to each type schema:
+Return ONLY a raw JSON array of exactly ${batchSize} items:
 [
-  {
-    "type": "mcq",
-    "sport": "${sport}",
-    "difficulty": "${difficulty === 'Mixed' ? 'Medium' : difficulty}",
-    "question": "...",
-    "options": ["...", "...", "...", "..."],
-    "correctAnswer": "...",
-    "explanation": "...",
-    "instagramHook": "...",
-    "suggestedHashtags": ["#${sport.toLowerCase().replace(/[^a-z0-9]/g, '')}", "#SportsTrivia"]
-  },
+  { "type": "mcq", "sport": "${sport}", "difficulty": "${difficulty === 'Mixed' ? 'Medium' : difficulty}", "question": "...", "options": ["...","...","...","..."], "correctAnswer": "...", "explanation": "...", "instagramHook": "...", "suggestedHashtags": ["#${sport.toLowerCase().replace(/[^a-z0-9]/g, '')}","#SportsTrivia"] },
   ...
-]
-`;
+]`;
 
     // 3. Model call with multi-tiered resilience (Live Google Search Grounding -> AI Fact Verification -> Fallback)
     let rawItems: any[] = [];
@@ -284,7 +304,8 @@ Return ONLY a raw JSON array containing exactly ${batchSize} item objects confor
     try {
       const config: any = {
         systemInstruction,
-        temperature: 0.85,
+        // Use lower temperature when topicFocus is set to stay precisely on topic
+        temperature: hasTopic ? 0.3 : 0.85,
       };
 
       if (useWebSearch) {
