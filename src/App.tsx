@@ -42,7 +42,33 @@ import {
 import { LandingPage } from './components/LandingPage';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'landing' | 'studio'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'studio'>(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#/studio') {
+      return 'studio';
+    }
+    return 'landing';
+  });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#/studio') {
+        setCurrentView('studio');
+      } else {
+        setCurrentView('landing');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const navigateToView = (view: 'landing' | 'studio') => {
+    if (view === 'studio') {
+      window.location.hash = '#/studio';
+    } else {
+      window.location.hash = '#/';
+    }
+    setCurrentView(view);
+  };
   const [items, setItems] = useState<SportsContentItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeSport, setActiveSport] = useState<string>('Cricket');
@@ -319,7 +345,7 @@ export default function App() {
   if (currentView === 'landing') {
     return (
       <LandingPage
-        onStartNow={() => setCurrentView('studio')}
+        onStartNow={() => navigateToView('studio')}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
@@ -344,7 +370,7 @@ export default function App() {
 
       {/* Header */}
       <Header
-        onGoHome={() => setCurrentView('landing')}
+        onGoHome={() => navigateToView('landing')}
         onOpenDocs={() => setIsDocsOpen(true)}
         onOpenVectorStore={() => setIsVectorStoreOpen(true)}
         onOpenExportModal={() => setIsExportOpen(true)}

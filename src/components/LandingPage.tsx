@@ -13,7 +13,11 @@ import {
   CheckCircle2,
   Brain,
   SlidersHorizontal,
-  Share2
+  Share2,
+  Flame,
+  Target,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -33,7 +37,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* Header / Navigation Bar */}
       <header className="border-b border-slate-200/70 dark:border-slate-800/80 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl sticky top-0 z-40">
         <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.location.hash = '#'}>
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-600 via-orange-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
               <Trophy className="w-4.5 h-4.5 text-white" />
             </div>
@@ -50,18 +54,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={onStartNow}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
+              onClick={onToggleTheme}
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Toggle theme"
             >
-              Agent Studio
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
             </button>
             <button
               id="btn-landing-start-now-nav"
               type="button"
               onClick={onStartNow}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 transition-all shadow-md shadow-orange-500/20 active:scale-95"
+              className="inline-flex items-center gap-1.5 px-4.5 py-2 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 hover:from-orange-500 hover:to-amber-400 transition-all shadow-md shadow-orange-500/20 active:scale-95 cursor-pointer"
             >
-              <span>Start Now</span>
+              <span>Launch Studio</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -73,20 +78,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100/80 dark:bg-orange-950/60 border border-orange-200 dark:border-orange-900/60 text-orange-700 dark:text-orange-300 text-xs font-bold mb-6"
+          transition={{ duration: 0.4 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-50 dark:bg-orange-950/60 border border-orange-200/80 dark:border-orange-900/60 text-orange-700 dark:text-orange-300 text-xs font-extrabold mb-6 shadow-2xs"
         >
           <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-          <span>Autonomous AI-Powered Sports Engagement Platform</span>
+          <span>Real-time Live Web Search Grounded AI Content Studio</span>
         </motion.div>
 
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white max-w-4xl leading-[1.15] mb-6 font-display"
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white max-w-4xl leading-[1.12] mb-6 font-display"
         >
-          Transform Live Sports Data into{' '}
+          Transform Live Sports Trivia & Stats into{' '}
           <span className="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 bg-clip-text text-transparent">
             Viral Social Content
           </span>
@@ -95,59 +100,59 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
           className="text-sm sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mb-8 font-medium"
         >
-          An intelligent sports agency agent that uncovers verified live records, transforms match facts into engaging Instagram Story quizzes, polls & stat challenges, and scores virality algorithmically.
+          StapuBox is an autonomous sports content engine. Specify your target sport and topic focus filter, and our agent uncovers verified live records, transforms facts into 5 interactive formats, and scores virality algorithmically.
         </motion.p>
 
-        {/* Call to Action Button */}
+        {/* Primary Call to Action Button */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4 mb-14"
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center gap-4 mb-16"
         >
           <button
             id="btn-landing-start-now-hero"
             type="button"
             onClick={onStartNow}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-extrabold text-white bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 hover:from-orange-500 hover:to-amber-400 transition-all shadow-xl shadow-orange-500/25 hover:scale-[1.02] active:scale-[0.98] group"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-extrabold text-white bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 hover:from-orange-500 hover:to-amber-400 transition-all shadow-xl shadow-orange-500/25 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
           >
             <span>Start Now — Launch AI Studio</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </motion.div>
 
-        {/* Key Agent Capabilities Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mt-4">
-          <div className="glass-panel p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3">
+        {/* Interactive Feature Showcase Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mt-2">
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3 transition-all hover:border-orange-500/40">
             <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center">
               <Globe className="w-5 h-5" />
             </div>
             <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Live Search Grounding</h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              Grounds content generation in verified live Google Search facts, tournament records, and iconic sports trivia matching your exact topic focus filter.
+              Uses real-time Google Search grounding to discover verified records, recent tournament drama, and lesser-known sports facts without hallucination or static presets.
             </p>
           </div>
 
-          <div className="glass-panel p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3">
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3 transition-all hover:border-purple-500/40">
             <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
               <Layers className="w-5 h-5" />
             </div>
-            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Diverse Engagement Formats</h3>
+            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">5 High-Engagement Formats</h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              Converts raw stats into ready-to-publish Instagram stickers: MCQs, True/False statements, Fan Debate Polls, Fill-in-Blanks & Stat Guessing.
+              Converts sports facts into ready-to-publish Instagram formats: MCQ Quizzes, True/False challenges, This-or-That Fan Debate Polls, Fill-in-Blanks & Stat Guessing.
             </p>
           </div>
 
-          <div className="glass-panel p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3">
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3 transition-all hover:border-emerald-500/40">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <BarChart3 className="w-5 h-5" />
             </div>
             <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Predicted Virality Scorer</h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              Calculates algorithmic hook power, shareability, completion rates, and optimal posting windows to maximize fan engagement.
+              Analyzes algorithmic hook power, format dynamics, dwell time, and audience shareability with a real-time side-by-side card ranking analytics engine.
             </p>
           </div>
         </div>
@@ -155,7 +160,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
       {/* Footer */}
       <footer className="mt-auto border-t border-slate-200/70 dark:border-slate-800/80 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
-        <p>© 2026 StapuBox AI Agent Studio. All rights reserved.</p>
+        <p>© 2026 StapuBox AI Agent Studio. Built for high-engagement sports social agencies.</p>
       </footer>
     </div>
   );
