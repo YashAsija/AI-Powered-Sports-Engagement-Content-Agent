@@ -191,6 +191,12 @@ export const GenerationControls: React.FC<GenerationControlsProps> = ({
               placeholder="e.g. 2024 World Cup, Rohit Sharma, Champions League, Rivalries..."
               value={topicFocus}
               onChange={(e) => setTopicFocus(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleGenerateClick();
+                }
+              }}
               className={`w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all ${
                 topicFocus ? 'border-orange-500/60 dark:border-orange-500/50 pr-8 bg-orange-50/20 dark:bg-orange-950/10' : 'border-slate-200 dark:border-slate-700'
               }`}
