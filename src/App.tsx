@@ -43,7 +43,7 @@ export default function App() {
   const [items, setItems] = useState<SportsContentItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeSport, setActiveSport] = useState<string>('Cricket');
-  const [topicFocus, setTopicFocus] = useState<string>('World Cup milestones, iconic individual scores, and legendary records');
+  const [topicFocus, setTopicFocus] = useState<string>('');
   const [contentType, setContentType] = useState<ContentFormatType>('mixed_batch');
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('Medium');
   const [batchSize, setBatchSize] = useState<number>(6);
@@ -93,7 +93,7 @@ export default function App() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // Initial load: Check for shared session query parameter or generate starter batch
+  // Initial load: Check for shared session query parameter if present
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const sharedSessionId = searchParams.get('session');
@@ -113,34 +113,16 @@ export default function App() {
             }
             setSelectedIndexInSimulator(0);
             showToast(`Loaded shared session with ${data.session.items.length} cards.`);
-          } else {
-            fallbackInitialBatch();
           }
         })
         .catch(err => {
           console.warn('Could not load shared session:', err);
-          fallbackInitialBatch();
         })
         .finally(() => {
           setIsLoading(false);
         });
-    } else {
-      fallbackInitialBatch();
     }
   }, []);
-
-  const fallbackInitialBatch = () => {
-    const initialRequest: BatchGenerationRequest = {
-      sport: 'Cricket',
-      difficulty: 'Medium',
-      contentType: 'mixed_batch',
-      batchSize: 6,
-      topicFocus: 'World Cup milestones, iconic individual scores, and legendary records',
-      useWebSearch: true,
-      useVectorDB: true,
-    };
-    handleGenerateBatch(initialRequest);
-  };
 
   // Main Batch Generation Handler
   const handleGenerateBatch = async (request: BatchGenerationRequest) => {
