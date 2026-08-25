@@ -446,11 +446,11 @@ Return ONLY a raw JSON array containing exactly ${batchSize} item objects confor
       }
     }
 
-    // Slice to exact requested batchSize
-    let finalItems = generatedItems.slice(0, batchSize);
+    // Slice to initial generated items
+    let finalItems = [...generatedItems];
 
-    // If fewer items generated, supplement with dynamic vector-synthesized items to guarantee exact batchSize
-    if (finalItems.length < batchSize) {
+    // If fewer items generated (or invalid items filtered), iteratively supplement with dynamic vector-synthesized items until EXACTLY batchSize items exist
+    while (finalItems.length < batchSize) {
       const missingCount = batchSize - finalItems.length;
       const vectorSupplements = generateDynamicVectorBatch(
         sport,
@@ -461,6 +461,9 @@ Return ONLY a raw JSON array containing exactly ${batchSize} item objects confor
       );
       finalItems.push(...vectorSupplements);
     }
+
+    // Ensure array is capped to exact requested batchSize
+    finalItems = finalItems.slice(0, batchSize);
 
     const duration = Date.now() - startTime;
     const responsePayload: BatchGenerationResponse = {
