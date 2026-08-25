@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        try {
+          var target = typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : null);
+          if (target) {
+            var rawFetch = target.fetch;
+            var fetchHandler = typeof rawFetch === 'function' ? rawFetch.bind(target) : rawFetch;
+            try {
+              Object.defineProperty(target, 'fetch', {
+                get: function() {
+                  return fetchHandler;
+                },
+                set: function(val) {
+                  fetchHandler = val;
+                },
+                configurable: true,
+                enumerable: true
+              });
+            } catch (e1) {
+              if (typeof Window !== 'undefined' && Window.prototype) {
+                try {
+                  Object.defineProperty(Window.prototype, 'fetch', {
+                    get: function() {
+                      return fetchHandler;
+                    },
+                    set: function(val) {
+                      fetchHandler = val;
+                    },
+                    configurable: true,
+                    enumerable: true
+                  });
+                } catch (e2) {}
+              }
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <title>StapuBox — AI-Powered Sports Engagement Content Agent</title>
+    <meta name="description" content="Multi-format sports engagement content agent for Instagram quizzes, polls, and trivia grounded in real-time web search and vector knowledge retrieval." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-slate-100/70 text-slate-900 antialiased font-sans min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

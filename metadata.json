@@ -1,0 +1,6 @@
+{
+  "name": "StapuBox Sports Engagement Content Agent",
+  "description": "Multi-format sports engagement content generation agent for Instagram stickers, polls, and quizzes grounded with web search and vector knowledge retrieval.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
