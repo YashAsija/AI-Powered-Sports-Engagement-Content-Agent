@@ -75,8 +75,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   const shareUrl = sessionId 
-    ? `${window.location.origin}${window.location.pathname}?session=${sessionId}`
-    : `${window.location.origin}${window.location.pathname}`;
+    ? `${window.location.origin}${window.location.pathname}?session=${sessionId}#/studio`
+    : `${window.location.origin}${window.location.pathname}#/studio`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl);

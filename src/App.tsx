@@ -128,6 +128,11 @@ export default function App() {
     const sharedSessionId = searchParams.get('session');
 
     if (sharedSessionId) {
+      // Immediately navigate to studio view when a session link is opened
+      setCurrentView('studio');
+      if (window.location.hash !== '#/studio') {
+        window.location.hash = '#/studio';
+      }
       setIsLoading(true);
       fetch(`/api/sessions/${sharedSessionId}`)
         .then(res => res.json())
