@@ -39,7 +39,10 @@ import {
   LayoutGrid
 } from 'lucide-react';
 
+import { LandingPage } from './components/LandingPage';
+
 export default function App() {
+  const [currentView, setCurrentView] = useState<'landing' | 'studio'>('landing');
   const [items, setItems] = useState<SportsContentItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeSport, setActiveSport] = useState<string>('Cricket');
@@ -313,6 +316,16 @@ export default function App() {
     });
   };
 
+  if (currentView === 'landing') {
+    return (
+      <LandingPage
+        onStartNow={() => setCurrentView('studio')}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col antialiased transition-colors duration-200 bg-mesh-light dark:bg-mesh-dark">
       {/* Toast Notification */}
@@ -331,6 +344,7 @@ export default function App() {
 
       {/* Header */}
       <Header
+        onGoHome={() => setCurrentView('landing')}
         onOpenDocs={() => setIsDocsOpen(true)}
         onOpenVectorStore={() => setIsVectorStoreOpen(true)}
         onOpenExportModal={() => setIsExportOpen(true)}

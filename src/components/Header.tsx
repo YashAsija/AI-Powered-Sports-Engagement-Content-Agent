@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 interface HeaderProps {
+  onGoHome?: () => void;
   onOpenDocs: () => void;
   onOpenVectorStore: () => void;
   onOpenExportModal: () => void;
@@ -21,6 +22,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  onGoHome,
   onOpenDocs,
   onOpenVectorStore,
   onOpenExportModal,
@@ -34,7 +36,10 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="w-full max-w-[1536px] mx-auto px-2.5 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo & Clean Title with Animated Icon */}
-          <div className="flex items-center gap-3 group cursor-pointer">
+          <div 
+            onClick={onGoHome}
+            className="flex items-center gap-3 group cursor-pointer"
+          >
             <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-600 via-orange-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform duration-200">
               <Trophy className="w-4 h-4 text-white drop-shadow-xs" />
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white dark:border-slate-950 animate-pulse" />
