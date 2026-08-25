@@ -165,7 +165,7 @@ export const LiveTrendBanner: React.FC<LiveTrendBannerProps> = ({
 
   return (
     <div 
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-950 via-slate-900 to-neutral-950 text-white p-3 sm:p-4 mb-5 border border-orange-500/30 shadow-lg"
+      className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-950 via-slate-900 to-neutral-950 text-white p-3 sm:p-4 mb-3.5 border border-orange-500/30 shadow-lg"
       onMouseEnter={() => setIsAutoCycling(false)}
       onMouseLeave={() => setIsAutoCycling(true)}
     >

@@ -485,8 +485,9 @@ export function generateDynamicVectorBatch(
 
   const docs = poolDocs.length > 0 ? poolDocs : globalVectorStore.getAll();
 
+  const formatPool: ContentFormatType[] = ['mcq', 'true_false', 'this_or_that_poll', 'fill_in_blank', 'guess_the_number'];
   const types: ContentFormatType[] = contentType === 'mixed_batch'
-    ? (['mcq', 'true_false', 'this_or_that_poll', 'fill_in_blank', 'guess_the_number'] as ContentFormatType[]).slice(0, count)
+    ? Array.from({ length: count }, (_, i) => formatPool[i % formatPool.length])
     : new Array(count).fill(contentType);
 
   const items: SportsContentItem[] = [];

@@ -46,6 +46,7 @@ export default function App() {
   const [topicFocus, setTopicFocus] = useState<string>('World Cup milestones, iconic individual scores, and legendary records');
   const [contentType, setContentType] = useState<ContentFormatType>('mixed_batch');
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('Medium');
+  const [batchSize, setBatchSize] = useState<number>(6);
   const [lastRequest, setLastRequest] = useState<BatchGenerationRequest | null>(null);
   const [selectedIndexInSimulator, setSelectedIndexInSimulator] = useState<number>(0);
   const [sidebarTab, setSidebarTab] = useState<'simulator' | 'virality'>('virality');
@@ -133,7 +134,7 @@ export default function App() {
       sport: 'Cricket',
       difficulty: 'Medium',
       contentType: 'mixed_batch',
-      batchSize: 5,
+      batchSize: 6,
       topicFocus: 'World Cup milestones, iconic individual scores, and legendary records',
       useWebSearch: true,
       useVectorDB: true,
@@ -306,7 +307,7 @@ export default function App() {
       sport: starter.sport,
       difficulty,
       contentType,
-      batchSize: 5,
+      batchSize,
       topicFocus: starter.focus,
       useWebSearch: true,
       useVectorDB: true,
@@ -323,7 +324,7 @@ export default function App() {
       sport: trend.sport,
       difficulty: trend.difficulty,
       contentType: trend.suggestedFormat,
-      batchSize: 5,
+      batchSize,
       topicFocus: trend.topicFocus,
       useWebSearch: true,
       useVectorDB: true,
@@ -331,7 +332,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col antialiased transition-colors duration-150">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col antialiased transition-colors duration-200 bg-mesh-light dark:bg-mesh-dark">
       {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-5 right-5 z-50 animate-in fade-in duration-150">
@@ -358,7 +359,7 @@ export default function App() {
       />
 
       {/* Main Studio Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex-1 w-full space-y-4">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex-1 w-full space-y-3">
         {/* Live Trend Watch Notification Banner */}
         <LiveTrendBanner
           onJumpStart={handleJumpStartTrend}
@@ -394,6 +395,8 @@ export default function App() {
           setContentType={setContentType}
           difficulty={difficulty}
           setDifficulty={setDifficulty}
+          batchSize={batchSize}
+          setBatchSize={setBatchSize}
         />
 
         {/* Batch Status Bar */}
@@ -426,7 +429,7 @@ export default function App() {
                           sport: activeSport,
                           difficulty,
                           contentType,
-                          batchSize: 5,
+                          batchSize,
                           topicFocus: undefined,
                           useWebSearch: true,
                           useVectorDB: true,
@@ -448,38 +451,7 @@ export default function App() {
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Layout Mode Switcher: Stacked Deck vs Grid */}
-              <div className="p-0.5 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center gap-0.5">
-                <button
-                  id="btn-layout-mode-stacked"
-                  type="button"
-                  onClick={() => setCardLayoutMode('stacked')}
-                  className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
-                    cardLayoutMode === 'stacked'
-                      ? 'bg-white dark:bg-slate-900 text-orange-600 dark:text-orange-400 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                  }`}
-                  title="Stacked Deck: Swipe/Tap cards with smooth 3D layered cycling"
-                >
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>Stacked Deck</span>
-                </button>
 
-                <button
-                  id="btn-layout-mode-grid"
-                  type="button"
-                  onClick={() => setCardLayoutMode('grid')}
-                  className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
-                    cardLayoutMode === 'grid'
-                      ? 'bg-white dark:bg-slate-900 text-orange-600 dark:text-orange-400 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                  }`}
-                  title="Grid View: Compare all generated cards side-by-side"
-                >
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  <span>Grid</span>
-                </button>
-              </div>
 
               {/* Copy All to Clipboard button */}
               <button
@@ -538,48 +510,31 @@ export default function App() {
           </div>
         )}
 
-        {/* Responsive Layout: Content Cards + Instagram Simulator */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Stacked Cards Deck or Responsive Grid */}
-          <div className="lg:col-span-7 xl:col-span-8">
+        {/* Main Grid: Generated Content Cards (Left) + Live Story Preview Simulator (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Left Column: Clean Responsive Content Cards Grid */}
+          <div className="lg:col-span-7 xl:col-span-7 space-y-4">
             {isLoading ? (
-              cardLayoutMode === 'stacked' ? (
-                <StackedDeckSkeleton />
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[0, 1, 2, 3].map((idx) => (
-                    <ContentCardSkeleton key={idx} index={idx} />
-                  ))}
-                </div>
-              )
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[0, 1, 2, 3].map((idx) => (
+                  <ContentCardSkeleton key={idx} index={idx} />
+                ))}
+              </div>
             ) : items.length > 0 ? (
-              cardLayoutMode === 'stacked' ? (
-                <StackedCardsDeck
-                  items={items}
-                  selectedIndex={selectedIndexInSimulator}
-                  onSelectIndex={(newIdx) => setSelectedIndexInSimulator(newIdx)}
-                  onRegenerateSingle={handleRegenerateSingleItem}
-                  onSelectForSimulator={(item) => {
-                    const idx = items.findIndex(it => it.id === item.id);
-                    if (idx !== -1) setSelectedIndexInSimulator(idx);
-                  }}
-                />
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <AnimatePresence mode="popLayout">
-                    {items.map((item, idx) => (
-                      <ContentCard
-                        key={item.id}
-                        item={item}
-                        index={idx}
-                        onRegenerate={handleRegenerateSingleItem}
-                        onSelectForSimulator={() => setSelectedIndexInSimulator(idx)}
-                        isSelectedInSimulator={selectedIndexInSimulator === idx}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <AnimatePresence mode="popLayout">
+                  {items.map((item, idx) => (
+                    <ContentCard
+                      key={item.id}
+                      item={item}
+                      index={idx}
+                      onRegenerate={handleRegenerateSingleItem}
+                      onSelectForSimulator={() => setSelectedIndexInSimulator(idx)}
+                      isSelectedInSimulator={selectedIndexInSimulator === idx}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
             ) : (
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-12 text-center text-slate-400">
                 <HelpCircle className="w-8 h-8 mx-auto text-slate-400 dark:text-slate-500 mb-2" />
@@ -589,67 +544,75 @@ export default function App() {
             )}
           </div>
 
-          {/* Right Column: Mini-Dashboard Sidebar (Story Simulator & Virality Dashboard) */}
-          <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 space-y-3.5">
-            {/* Sidebar View Switcher Tabs */}
-            <div className="p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 flex items-center gap-1 shadow-2xs">
-              <button
-                id="btn-sidebar-tab-virality"
-                type="button"
-                onClick={() => setSidebarTab('virality')}
-                className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                  sidebarTab === 'virality'
-                    ? 'bg-white dark:bg-slate-900 text-orange-600 dark:text-orange-400 shadow-xs'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
-                <span>Predicted Virality</span>
+          {/* Right Column: Live Story Preview Simulator */}
+          <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-20">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-3 sm:p-4 shadow-2xs">
+              <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+                    <Smartphone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                      Live Story Preview
+                    </h3>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Real-time Instagram & social media sticker preview
+                    </p>
+                  </div>
+                </div>
                 {items.length > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400">
-                    AI
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+                    Card #{selectedIndexInSimulator + 1} of {items.length}
                   </span>
                 )}
-              </button>
+              </div>
 
-              <button
-                id="btn-sidebar-tab-simulator"
-                type="button"
-                onClick={() => setSidebarTab('simulator')}
-                className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                  sidebarTab === 'simulator'
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>Story Preview</span>
-              </button>
-            </div>
-
-            {/* Render Active Sidebar Tab */}
-            {isLoading && sidebarTab === 'virality' ? (
-              <ViralityDashboardSkeleton />
-            ) : sidebarTab === 'virality' ? (
-              <ViralityDashboard
-                items={items}
-                selectedIndex={selectedIndexInSimulator}
-                onSelectIndex={(newIdx) => setSelectedIndexInSimulator(newIdx)}
-              />
-            ) : (
               <InstagramStorySimulator
                 item={items[selectedIndexInSimulator] || items[0] || null}
                 itemsList={items}
                 currentIndex={selectedIndexInSimulator}
                 onSelectIndex={(newIdx) => setSelectedIndexInSimulator(newIdx)}
               />
-            )}
+            </div>
           </div>
+        </div>
+
+        {/* Bottom Section: Predicted Virality Dashboard (Positioned Below Generated Content) */}
+        <div className="w-full pt-0">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-xl bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                  <span>AI Predicted Virality & Engagement Intelligence</span>
+                  <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border border-orange-200/60 dark:border-orange-900/60">
+                    REAL-TIME AI SCORER
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Comprehensive performance analytics, peak posting windows, and algorithmic breakdown for active batch
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <ViralityDashboardSkeleton />
+          ) : (
+            <ViralityDashboard
+              items={items}
+              selectedIndex={selectedIndexInSimulator}
+              onSelectIndex={(newIdx) => setSelectedIndexInSimulator(newIdx)}
+            />
+          )}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200/80 dark:border-slate-800 py-5 mt-10 text-xs text-slate-500 dark:text-slate-400 transition-colors">
+      <footer className="border-t border-slate-200/80 dark:border-slate-800 py-4 mt-6 text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
             <span className="font-bold text-slate-900 dark:text-white">StapuBox</span>

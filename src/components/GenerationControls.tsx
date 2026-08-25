@@ -24,6 +24,8 @@ interface GenerationControlsProps {
   setContentType?: (type: ContentFormatType) => void;
   difficulty?: DifficultyLevel;
   setDifficulty?: (diff: DifficultyLevel) => void;
+  batchSize?: number;
+  setBatchSize?: (size: number) => void;
 }
 
 const PRESET_SPORTS = [
@@ -38,7 +40,7 @@ const PRESET_SPORTS = [
 ];
 
 const FORMAT_CHOICES: { id: ContentFormatType; label: string }[] = [
-  { id: 'mixed_batch', label: 'Mixed Variety (5 Diverse Formats)' },
+  { id: 'mixed_batch', label: 'Mixed Variety (Diverse Formats)' },
   { id: 'mcq', label: 'Multiple Choice (MCQ)' },
   { id: 'true_false', label: 'True / False Challenge' },
   { id: 'this_or_that_poll', label: 'This-or-That Fan Poll' },
@@ -68,10 +70,13 @@ export const GenerationControls: React.FC<GenerationControlsProps> = ({
   setContentType: controlledSetContentType,
   difficulty: controlledDifficulty,
   setDifficulty: controlledSetDifficulty,
+  batchSize: controlledBatchSize,
+  setBatchSize: controlledSetBatchSize,
 }) => {
   const [internalDifficulty, setInternalDifficulty] = useState<DifficultyLevel>('Medium');
   const [internalContentType, setInternalContentType] = useState<ContentFormatType>('mixed_batch');
   const [internalTopicFocus, setInternalTopicFocus] = useState<string>('');
+  const [internalBatchSize, setInternalBatchSize] = useState<number>(6);
   
   const difficulty = controlledDifficulty ?? internalDifficulty;
   const setDifficulty = controlledSetDifficulty ?? setInternalDifficulty;
@@ -82,7 +87,8 @@ export const GenerationControls: React.FC<GenerationControlsProps> = ({
   const topicFocus = controlledTopicFocus ?? internalTopicFocus;
   const setTopicFocus = controlledSetTopicFocus ?? setInternalTopicFocus;
 
-  const [batchSize, setBatchSize] = useState<number>(5);
+  const batchSize = controlledBatchSize ?? internalBatchSize;
+  const setBatchSize = controlledSetBatchSize ?? setInternalBatchSize;
   const [useWebSearch, setUseWebSearch] = useState<boolean>(true);
   const [useVectorDB, setUseVectorDB] = useState<boolean>(true);
   const [showGroundingSettings, setShowGroundingSettings] = useState<boolean>(false);
@@ -106,7 +112,7 @@ export const GenerationControls: React.FC<GenerationControlsProps> = ({
   const currentSportSuggestions = SPORT_SUGGESTED_TOPICS[activeSport] || [];
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 mb-5 shadow-xs transition-colors">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-3.5 sm:p-4 mb-3.5 shadow-xs transition-colors">
       {/* 1. Sport Selector Pills */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-3.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1 shrink-0 uppercase tracking-wider text-[11px]">
@@ -268,10 +274,11 @@ export const GenerationControls: React.FC<GenerationControlsProps> = ({
         <div className="flex items-center gap-2.5 justify-end">
           {/* Count Toggle */}
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200/60 dark:border-slate-700">
-            {[4, 5].map((cnt) => (
+            {[5, 6].map((cnt) => (
               <button
                 key={cnt}
                 type="button"
+                id={`btn-batch-size-${cnt}`}
                 onClick={() => setBatchSize(cnt)}
                 className={`px-3 py-1 text-xs rounded-lg font-semibold transition-all ${
                   batchSize === cnt

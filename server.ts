@@ -18,7 +18,7 @@ import {
 
 dotenv.config();
 
-const PORT = 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3005;
 const app = express();
 app.use(express.json({ limit: '5mb' }));
 
@@ -177,7 +177,7 @@ app.post('/api/generate-batch', async (req, res) => {
   const sport = body.sport || 'Cricket';
   const difficulty = body.difficulty || 'Medium';
   const contentType = body.contentType || 'mixed_batch';
-  const batchSize = Math.min(5, Math.max(3, body.batchSize || 4));
+  const batchSize = Math.min(6, Math.max(3, body.batchSize || 5));
   const topicFocus = body.topicFocus || '';
   const useWebSearch = body.useWebSearch !== false;
   const useVectorDB = body.useVectorDB !== false;
@@ -204,7 +204,7 @@ app.post('/api/generate-batch', async (req, res) => {
     let formatTypes: ContentFormatType[] = [];
     if (contentType === 'mixed_batch') {
       const pool: ContentFormatType[] = ['mcq', 'true_false', 'this_or_that_poll', 'fill_in_blank', 'guess_the_number'];
-      formatTypes = pool.slice(0, batchSize);
+      formatTypes = Array.from({ length: batchSize }, (_, i) => pool[i % pool.length]);
     } else {
       formatTypes = new Array(batchSize).fill(contentType);
     }
@@ -443,9 +443,12 @@ Return ONLY a raw JSON array containing exactly ${batchSize} item objects confor
       }
     }
 
-    // If fewer items generated, supplement with dynamic vector-synthesized items
-    if (generatedItems.length < batchSize) {
-      const missingCount = batchSize - generatedItems.length;
+    // Slice to exact requested batchSize
+    let finalItems = generatedItems.slice(0, batchSize);
+
+    // If fewer items generated, supplement with dynamic vector-synthesized items to guarantee exact batchSize
+    if (finalItems.length < batchSize) {
+      const missingCount = batchSize - finalItems.length;
       const vectorSupplements = generateDynamicVectorBatch(
         sport,
         difficulty,
@@ -453,13 +456,13 @@ Return ONLY a raw JSON array containing exactly ${batchSize} item objects confor
         missingCount,
         topicFocus
       );
-      generatedItems.push(...vectorSupplements);
+      finalItems.push(...vectorSupplements);
     }
 
     const duration = Date.now() - startTime;
     const responsePayload: BatchGenerationResponse = {
       batchId: `batch-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      items: generatedItems,
+      items: finalItems,
       metadata: {
         sport,
         difficulty,
@@ -467,9 +470,9 @@ Return ONLY a raw JSON array containing exactly ${batchSize} item objects confor
         contentType,
         timestamp: new Date().toISOString(),
         webSearchGroundingUsed: useWebSearch && !!(groundingChunks && groundingChunks.length > 0),
-        vectorKnowledgeUsed: useVectorDB && (!!topVectorDoc || generatedItems.some(i => i.citation.sourceType === 'vector_db')),
-        totalGenerated: generatedItems.length,
-        validatedCount: generatedItems.length,
+        vectorKnowledgeUsed: useVectorDB && (!!topVectorDoc || finalItems.some(i => i.citation.sourceType === 'vector_db')),
+        totalGenerated: finalItems.length,
+        validatedCount: finalItems.length,
         executionTimeMs: duration,
       }
     };

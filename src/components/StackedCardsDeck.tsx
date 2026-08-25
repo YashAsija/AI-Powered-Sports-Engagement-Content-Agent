@@ -77,12 +77,15 @@ export const StackedCardsDeck: React.FC<StackedCardsDeckProps> = ({
     const newOrder = [...rest, first];
     const newTopIndex = newOrder[0];
 
+    // Reset drag MotionValue immediately so card doesn't freeze in offset position
+    dragX.set(0);
+
     setTimeout(() => {
       setDeckOrder(newOrder);
       onSelectIndex(newTopIndex);
       setIsCycling(false);
       dragX.set(0);
-    }, 280);
+    }, 220);
   }, [items.length, deckOrder, isCycling, onSelectIndex, dragX]);
 
   // Pull Card from Back to Front (smooth reverse transition)
@@ -96,17 +99,20 @@ export const StackedCardsDeck: React.FC<StackedCardsDeckProps> = ({
     const newOrder = [last, ...rest];
     const newTopIndex = newOrder[0];
 
+    dragX.set(0);
+
     setTimeout(() => {
       setDeckOrder(newOrder);
       onSelectIndex(newTopIndex);
       setIsCycling(false);
       dragX.set(0);
-    }, 280);
+    }, 220);
   }, [items.length, deckOrder, isCycling, onSelectIndex, dragX]);
 
   // Jump specific index directly to front
   const handleJumpToIndex = (targetIdx: number) => {
     if (targetIdx === topIndex || isCycling) return;
+    dragX.set(0);
     const filtered = deckOrder.filter((idx) => idx !== targetIdx);
     const newOrder = [targetIdx, ...filtered];
     setDeckOrder(newOrder);
@@ -307,7 +313,7 @@ export const StackedCardsDeck: React.FC<StackedCardsDeckProps> = ({
       </div>
 
       {/* 3D Stacked Cards Deck Presentation Area */}
-      <div className="relative min-h-[580px] sm:min-h-[540px] md:min-h-[520px] w-full pt-1 pb-16 flex justify-center perspective-[1200px] select-none">
+      <div className="relative min-h-[440px] sm:min-h-[430px] md:min-h-[420px] w-full pt-1 pb-4 flex justify-center perspective-[1200px] select-none">
         {/* Render visible top 3 cards in reverse order for correct visual z-indexing */}
         {deckOrder.slice(0, 3).reverse().map((itemIdx) => {
           const stackPosition = deckOrder.indexOf(itemIdx);
@@ -334,32 +340,20 @@ export const StackedCardsDeck: React.FC<StackedCardsDeckProps> = ({
               style={{
                 x: isTop ? dragX : 0,
                 rotate: isTop ? dragRotate : style.rotate,
-                opacity: isTop ? (isCycling ? 0.3 : dragOpacity) : style.opacity,
-                pointerEvents: isTop ? 'auto' : 'none',
+                opacity: isTop ? (isCycling ? 0.4 : dragOpacity) : style.opacity,
+                pointerEvents: isTop && !isCycling ? 'auto' : 'none',
               }}
-              animate={
-                isTop && isCycling
-                  ? {
-                      y: -80,
-                      x: cycleDirection === 'forward' ? 180 : -180,
-                      rotate: cycleDirection === 'forward' ? 16 : -16,
-                      scale: 0.92,
-                      opacity: 0.2,
-                      zIndex: 35,
-                      transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-                    }
-                  : {
-                      y: style.y,
-                      scale: style.scale,
-                      zIndex: style.zIndex,
-                      transition: {
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 24,
-                        mass: 0.8,
-                      },
-                    }
-              }
+              animate={{
+                y: style.y,
+                scale: style.scale,
+                zIndex: style.zIndex,
+                transition: {
+                  type: 'spring',
+                  stiffness: 260,
+                  damping: 22,
+                  mass: 0.65,
+                },
+              }}
               className="absolute top-0 w-full max-w-2xl origin-bottom touch-pan-y"
             >
               {/* Peek Trigger for background cards to bring them to front directly on click */}
