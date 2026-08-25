@@ -223,31 +223,34 @@ When Google Search is enabled, use live search to uncover verified records, rece
 Maintain a high-energy, exciting sports tone. Never output fake statistics or hallucinations.
 Always return strictly valid JSON matching the requested schema.`;
 
-    // Dynamic diversity angles to guarantee uniqueness
+    // Dynamic diversity angles & random seed to guarantee fresh live web search query generation
     const uniquenessAngles = [
-      'Iconic clutch moments and buzzer-beater tournament finishes',
-      'Unbroken world records and statistical anomalies',
-      'Surprising rule quirks and dramatic referee controversies',
-      'Historic rivalries and high-stakes championship finals',
-      'Lesser-known trivia, debut milestones, and underdog triumphs',
-      'Tactical masterclasses and record individual feats'
+      'clutch moments, buzzer-beaters, and final-second victories',
+      'unbroken world records, career milestones, and statistical peaks',
+      'controversial referee calls, VAR drama, and rule quirks',
+      'rivalry showdowns, derby matches, and championship thrillers',
+      'underdog miracle runs, historic debuts, and comeback matches',
+      'tactical masterclasses, individual scoring records, and hall-of-fame feats'
     ];
     const randomAngle = uniquenessAngles[Math.floor(Math.random() * uniquenessAngles.length)];
+    const seed = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
-    // Construct prompt with strict topic focus enforcement
+    // Construct prompt with strict topic focus enforcement & search uniqueness
     const prompt = `
-Generate a fresh, completely unique batch of ${batchSize} sports engagement content items for ${sport}.
+Generate a 100% FRESH, UNIQUE batch of ${batchSize} sports engagement content items for ${sport}.
+Generation Seed: ${seed}.
 Difficulty: ${difficulty}.
 ${hasTopic 
   ? `🚨 MANDATORY TOPIC FILTER / FOCUS: "${cleanTopic}".
 EVERY single content item (all ${batchSize} items) MUST be directly and specifically about "${cleanTopic}" (e.g. testing records, players, matches, milestones, or facts specifically within this topic).
+Focus Angle for Search: ${randomAngle}.
 Do NOT generate generic questions about ${sport} that don't directly reference or test "${cleanTopic}".` 
-  : `Topic Focus: General ${sport} trivia, iconic milestones, world records, and tournament history (${randomAngle}).`}
+  : `Topic Focus: Live ${sport} facts, iconic milestones, world records, and tournament history (Focus Angle: ${randomAngle}).`}
 Target Formats: ${formatTypes.join(', ')}.
 
 ${vectorContext ? `CHROMA VECTOR STORE GROUNDING:\n${vectorContext}\n` : ''}
 
-${previousQuestions.length > 0 ? `PREVIOUS QUESTIONS ALREADY GENERATED IN THIS SESSION (STRICT FRESHNESS MANDATE - DO NOT DUPLICATE OR RE-USE ANY OF THESE TOPICS):\n${previousQuestions.slice(-15).map(q => `- ${q}`).join('\n')}\n` : ''}
+${previousQuestions.length > 0 ? `PREVIOUS QUESTIONS ALREADY GENERATED IN THIS SESSION (STRICT DEDUPLICATION MANDATE - DO NOT DUPLICATE OR RE-USE ANY OF THESE TOPICS):\n${previousQuestions.slice(-20).map(q => `- ${q}`).join('\n')}\n` : ''}
 
 IMPORTANT RULES:
 1. Every generated question, statement, poll prompt, and metric challenge MUST strictly adhere to the requested format and topic focus ("${cleanTopic || sport}").
@@ -528,12 +531,13 @@ app.post('/api/regenerate-item', async (req, res) => {
       }
     }
 
+    const seed = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const prompt = getTypeSpecificPrompt({
       sport: targetSport,
       difficulty: targetDiff,
       formatType: itemType,
       topicFocus: topicFocus || undefined,
-      retrievedContext,
+      retrievedContext: `Generation Seed: ${seed}\n${retrievedContext}`,
       previousQuestions: previous,
     });
 
@@ -542,8 +546,8 @@ app.post('/api/regenerate-item', async (req, res) => {
 
     try {
       const config: any = {
-        systemInstruction: 'You are the StapuBox Sports Engagement Content Agent. Generate exactly one fresh, high-quality, verified sports engagement item adhering strictly to the JSON schema.',
-        temperature: 0.9,
+        systemInstruction: `You are the StapuBox Sports Engagement Content Agent (Seed: ${seed}). Perform a fresh live Google Search specifically for ${targetSport} (${topicFocus || 'verified facts'}). Generate exactly one 100% unique, verified sports engagement item adhering strictly to the JSON schema. NEVER duplicate previous questions.`,
+        temperature: 0.95,
       };
 
       if (useWebSearch !== false) {

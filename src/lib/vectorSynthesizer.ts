@@ -483,7 +483,8 @@ export function generateDynamicVectorBatch(
     ? searchResults.map((r) => r.document)
     : globalVectorStore.getAll().filter((d) => sport === 'All' || d.sport.toLowerCase() === sport.toLowerCase());
 
-  const docs = poolDocs.length > 0 ? poolDocs : globalVectorStore.getAll();
+  const rawDocs = poolDocs.length > 0 ? poolDocs : globalVectorStore.getAll();
+  const docs = shuffle(rawDocs);
 
   const formatPool: ContentFormatType[] = ['mcq', 'true_false', 'this_or_that_poll', 'fill_in_blank', 'guess_the_number'];
   const types: ContentFormatType[] = contentType === 'mixed_batch'
